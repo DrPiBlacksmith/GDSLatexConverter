@@ -1,8 +1,10 @@
 """
 This python library allows conversion of gds (gdsII/gds2) files / gdspy
 libraries to latex (and subsequent svg, pdf, png, jpeg, ...).
-More information on https://github.com/Aypac/GDSLatexConverter
-@author René Vollmer
+Original version: More information on https://github.com/Aypac/GDSLatexConverter
+                @author René Vollmer
+This version: More information on https://github.com/DrPiBlacksmith/GDSLatexConverter
+                @author Pietro FERREIRA
 """
 
 import gdspy
@@ -27,8 +29,11 @@ class GDSLatexConverter:
         assert type(gdslibrary) is gdspy.GdsLibrary, 'Please pass a gdspy.GdsLibrary to the parameter gdslibrary.'
         self.gdslibrary = gdslibrary
         self.layer_per_cell = {}
-
-        self.scale = 1
+        #following line has been changed from original GDSLatexConverter to be convert the scaling to 1.00000 -4 meters
+        #the minimum drawable distance is 1 nm
+        #the maximum drawable distance is 16 meters
+        #without this full chip layouts cannot be drawn and lulatex fails the compilation
+        self.scale = 0.01
         self.layer_drawcolor = {}
         self.layer_drawopt = {}
         self.layer_per_cell = {}
@@ -93,9 +98,10 @@ class GDSLatexConverter:
         latex += "% DEFINE PICS\n"
         latex += pics  # self._indent(tlc_pics)
         latex += "\n% END: DEFINE PICS\n\\begin{document}\n"
-        latex += self._TAB + "\\begin{tikzpicture}\n"
+        #following line has been changed from original GDSLatexConverter to be able to fix the pdf page size
+        latex += self._TAB + "\\resizebox{\\columnwidth}{!}\n{\n\\begin{tikzpicture}\n"
         latex += self._indent(fcts, level=2) + "\n"
-        latex += self._TAB + "\\end{tikzpicture}\n\\end{document}"
+        latex += self._TAB + "\\end{tikzpicture}\n}\n\\end{document}"
         self._latex = latex
 
     def _rec_check_poly(self, cell, layers=None):
