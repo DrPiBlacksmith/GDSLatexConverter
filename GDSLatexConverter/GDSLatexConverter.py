@@ -325,8 +325,8 @@ class GDSLatexConverter:
 
     def _conv_str(self, string: str):
         string = str(string)
-        sstr = re.sub('[\s]', '_', string)
-        sstr = re.sub('[^\w_]', '', sstr)
+        sstr = re.sub(r'[\s]', '_', string)
+        sstr = re.sub(r'[^\w_]', '', sstr)
         return sstr
 
     def _indent(self, text, level=1):
